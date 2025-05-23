@@ -21,7 +21,7 @@ This project is a web-based face recognition login system built with Flask. It a
 
 1. Clone the repository:
    ```
-   git clone <repository-url>
+   git clone https://github.com/charanhajari/face_recognition_login_system
    cd face_recognition_login
    ```
 
