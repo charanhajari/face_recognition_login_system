@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Login</title>
+    
+</head>
+<style>
+   body{
+    background-image: url('/static/abc.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    font-family: Arial, sans-serif;
+    
+    display: inline;
+    border-width: 20%;
+    align-items: left ;
+    text-align: left;
+
+    }
+    .bc{
+        width: 50%;
+        padding-top: 7%;
+    }
+    h1{
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .login{
+        border-width: 20%;
+        margin-bottom: 5%;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .vc{
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 5%;
+        border-radius: 20%;
+
+    }
+    button{
+        height: 10%;
+        width: 30%;
+        font-size: 20px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        position: relative;
+        top: 50%;
+        left: 20%;
+        
+    }
+    .vcc{
+        border-radius: 25%;
+        
+    }
+    .video
+    {
+        justify-content: center;
+        align-items: center;
+        text-align: left;
+        margin-bottom: 5%;
+        border-radius: 20%;
+
+    }
+    .inp{
+        left:30%;
+        height: 10%;
+        width: 10%;
+    color: aliceblue;
+        margin: 2%;
+    }
+    .btn{
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+
+</style>
+<body>
+    <h1>Face Recognition Login</h1>
+    <div class="bc">
+        <div class="vc">
+            <video class="vcc" id="video" width="600" height="500" autoplay></video>
+        </div>
+        
+        <br>
+        <button onclick="signup()">Sign Up</button>
+        <button onclick="signin()">Sign In</button>
+    </div>
+    
+    <script>
+        const video = document.getElementById('video');
+
+        // Get access to the camera
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+            video.srcObject = stream;
+        });
+
+        function captureImage() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg');
+        }
+
+        function signup() {
+            const username = prompt('Enter username:');
+            if (username) {
+                const image = captureImage().split(',')[1]; // Remove the data:image/jpeg;base64, part
+                fetch('/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username, image: image })
+                })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function signin() {
+            const image = captureImage().split(',')[1];
+            fetch('/signin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: image })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.status === 'success') {
+                    window.location.href = data.redirect;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
